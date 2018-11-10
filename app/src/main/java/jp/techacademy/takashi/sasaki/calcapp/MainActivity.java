@@ -18,13 +18,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button additionButton = (Button) findViewById(R.id.additionButton);
+        Button additionButton = findViewById(R.id.additionButton);
         additionButton.setOnClickListener(this);
-        Button subtractionButton = (Button) findViewById(R.id.subtractionButton);
+        Button subtractionButton = findViewById(R.id.subtractionButton);
         subtractionButton.setOnClickListener(this);
-        Button multiplicationButton = (Button) findViewById(R.id.multiplicationButton);
+        Button multiplicationButton = findViewById(R.id.multiplicationButton);
         multiplicationButton.setOnClickListener(this);
-        Button divisionButton = (Button) findViewById(R.id.divisionButton);
+        Button divisionButton = findViewById(R.id.divisionButton);
         divisionButton.setOnClickListener(this);
     }
 
@@ -33,31 +33,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         EditText text1 = findViewById(R.id.value1);
         EditText text2 = findViewById(R.id.value2);
 
+        BigDecimal value1 = null;
+        BigDecimal value2 = null;
+
         if (text1.getText().toString().equals("")) {
             Snackbar.make(v, "値1を入力して下さい", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             text1.requestFocus();
             return;
         }
+
+        try {
+            value1 = new BigDecimal(text1.getText().toString());
+        } catch (Exception e) {
+            Snackbar.make(v, "値1には数値を入力して下さい", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            text1.getEditableText().clear();
+            text1.requestFocus();
+            return;
+        }
+
         if (text2.getText().toString().equals("")) {
             Snackbar.make(v, "値2を入力して下さい", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             text2.requestFocus();
             return;
         }
 
-        // android:inputType="numberDecimal"を指定しているが入力値検証は必要か？
-        BigDecimal value1 = new BigDecimal(text1.getText().toString());
-        BigDecimal value2 = new BigDecimal(text2.getText().toString());
+        try {
+            value2 = new BigDecimal(text2.getText().toString());
+        } catch (Exception e) {
+            Snackbar.make(v, "値2には数値を入力して下さい", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            text2.getEditableText().clear();
+            text2.requestFocus();
+            return;
+        }
+
         Log.d("debug", "value1:" + value1);
         Log.d("debug", "value2:" + value2);
 
         if (v.getId() == R.id.divisionButton && value2.compareTo(BigDecimal.ZERO) == 0) {
             Snackbar.make(v, "0で割る事はできません", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            text2.setText("");
+            text2.getEditableText().clear();
             return;
         }
 
         Intent intent = new Intent(this, SecondActivity.class);
-        intent.putExtra("type", (int) v.getId());
+        intent.putExtra("type", v.getId());
         intent.putExtra("value1", value1.toString());
         intent.putExtra("value2", value2.toString());
         startActivity(intent);
